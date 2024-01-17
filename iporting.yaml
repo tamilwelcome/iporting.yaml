@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iporting-deployment
+  labels:
+    app: iporting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iporting
+  template:
+    metadata:
+      labels:
+        app: iporting
+    spec:
+      containers:
+      - name: iporting
+        image: tamildocker212121/iporting:1.2
+        volumeMounts:
+          - name: myconfigtest
+            mountPath: /etc/ddtcfg/iporting.json
+            subPath: iporting.json
+      volumes:
+        - name: myconfigtest
+          configMap:
+            name: my-config-map
