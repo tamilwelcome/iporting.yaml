@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: tamildocker212121/rabbitmq:1.1
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+            - containerPort: 1883
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  type: NodePort
+  ports:
+    - name: management
+      port: 15672
+      targetPort: 15672
+      nodePort: 32007
+  selector:
+    app: rabbitmq
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq2
+  labels:
+    app: rabbitmq
+spec:
+  type: NodePort
+  ports:
+    - name: management
+      port: 5672
+      targetPort: 5672
+      nodePort: 32008
+  selector:
+    app: rabbitmq
+
+
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: rabbitmq3
+      labels:
+        app: rabbitmq
+    spec:
+      type: NodePort
+      ports:
+        - protocol: TCP
+          port: 1883
+          targetPort: 1883
+          nodePort: 32009
+      selector:
+        app: rabbitmq
+
+
+
+
+
+
+
+
+
