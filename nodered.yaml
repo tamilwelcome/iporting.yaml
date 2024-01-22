@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: noderedstorage    
+  hostPath:
+    path: "/mnt/data"
+
+
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nodered-pvc
+spec:
+  storageClassName: noderedstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodered
+spec:
+  replicas: 1    
+  selector:
+    matchLabels:
+      app: nodered
+  template:
+    metadata:
+      labels:
+        app: nodered     
+    spec:
+      volumes:
+      - name: noderedvolume
+        persistentVolumeClaim:
+          claimName: nodered-pvc
+      containers:
+        - name: nodered
+          image: tamildocker212121/nodered3:1.1     
+          volumeMounts:
+          - name: noderedvolume
+            mountPath: "/data"  
+          ports:
+            - containerPort: 1880
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodered-service
+spec:
+  type: NodePort
+  ports:
+    - port: 1880       # Port exposed on the service
+      targetPort: 1880 # Port to which the service should forward traffic inside the pod
+      nodePort: 32012 # Port accessible externally on each Node
+  selector:
+    app: nodered # Label selector to match pods created by your deployment
+            
+
+
+
+
+
